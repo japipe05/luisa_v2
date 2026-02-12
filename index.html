@@ -3,147 +3,227 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>¿Quieres ser mi novia? 💖</title>
+<title>Para Luisa 💖</title>
 
 <style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
+
 body{
-    margin:0;
-    padding:0;
     height:100vh;
     display:flex;
     justify-content:center;
     align-items:center;
-    background: linear-gradient(135deg,#ff4e50,#fc913a);
-    font-family: 'Segoe UI', sans-serif;
     overflow:hidden;
+    background:url("luisa_foto.JPG") center/cover no-repeat;
     color:white;
     text-align:center;
 }
 
-.container{
-    background: rgba(255,255,255,0.1);
-    padding:40px;
+.overlay{
+    position:absolute;
+    width:100%;
+    height:100%;
+    background:linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7));
+}
+
+/* Entrada animada */
+.card{
+    position:relative;
+    width:380px;
+    padding:25px;
     border-radius:20px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 0 30px rgba(0,0,0,0.3);
+    backdrop-filter:blur(15px);
+    background:rgba(255,255,255,0.1);
+    box-shadow:0 0 50px rgba(255,0,100,0.5);
+    z-index:2;
+    animation:fadeUp 1.5s ease;
+}
+
+@keyframes fadeUp{
+    from{transform:translateY(50px);opacity:0;}
+    to{transform:translateY(0);opacity:1;}
 }
 
 h1{
-    font-size:2.5rem;
-    animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse{
-    0%{transform:scale(1);}
-    50%{transform:scale(1.1);}
-    100%{transform:scale(1);}
-}
-
-.buttons{
-    margin-top:30px;
+    font-size:24px;
+    margin-bottom:15px;
 }
 
 button{
-    padding:15px 30px;
-    font-size:18px;
-    border:none;
-    border-radius:30px;
+    padding:12px 25px;
     margin:10px;
+    border:none;
+    border-radius:25px;
+    font-size:16px;
     cursor:pointer;
     transition:0.3s;
 }
 
-#yes{
-    background:#00ff9d;
-    color:black;
+#yes{background:#00ffae;color:black;}
+#yes:hover{transform:scale(1.1);}
+#no{background:#ff1744;color:white;position:absolute;}
+
+.message{
+    display:none;
+    margin-top:20px;
+    font-size:22px;
+    animation:zoomIn 1s forwards;
 }
 
-#yes:hover{
-    background:#00e68a;
-    transform:scale(1.1);
+@keyframes zoomIn{
+    from{transform:scale(0);opacity:0;}
+    to{transform:scale(1);opacity:1;}
 }
 
-#no{
-    background:#ff1e56;
-    color:white;
-    position:absolute;
+.ring{
+    font-size:60px;
+    display:none;
+    animation:spin 2s infinite linear;
 }
 
+@keyframes spin{
+    from{transform:rotate(0deg);}
+    to{transform:rotate(360deg);}
+}
+
+/* Corazones flotando */
 .heart{
     position:absolute;
     font-size:20px;
-    animation: float 5s linear infinite;
+    animation:float 6s linear infinite;
 }
 
 @keyframes float{
-    0%{
-        transform:translateY(100vh);
-        opacity:1;
-    }
-    100%{
-        transform:translateY(-10vh);
-        opacity:0;
-    }
+    0%{transform:translateY(100vh);opacity:1;}
+    100%{transform:translateY(-10vh);opacity:0;}
 }
 
-.message{
-    font-size:2rem;
-    margin-top:20px;
-    display:none;
+/* Máquina de escribir */
+.typewriter{
+    overflow:hidden;
+    border-right:2px solid white;
+    white-space:nowrap;
+    animation:typing 3s steps(30,end), blink .7s infinite;
+}
+
+@keyframes typing{
+    from{width:0}
+    to{width:100%}
+}
+
+@keyframes blink{
+    50%{border-color:transparent}
+}
+
+canvas{
+    position:absolute;
+    top:0;
+    left:0;
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-    <h1>¿Quieres ser mi novia? 💕</h1>
+<div class="overlay"></div>
+<canvas id="fireworks"></canvas>
 
-    <div class="buttons">
-        <button id="yes">¡Sí! 💖</button>
+<audio id="music" loop>
+    <source src="perfect.mpeg" type="audio/mpeg">
+</audio>
+
+<div class="card">
+    <h1 class="typewriter">💌 Tengo algo que preguntarte...</h1>
+    <button onclick="openQuestion()">Abrir Carta 💖</button>
+
+    <div id="question" style="display:none;">
+        <h1>Luisa ❤️ ¿Quieres ser mi novia?</h1>
+        <button id="yes">¡Sí! 😍</button>
         <button id="no">No 😢</button>
     </div>
 
     <div class="message" id="message">
-        💘 ¡Sabía que dirías que sí! 💘 <br>
-        ¡Ahora somos oficialmente novios! 🥰✨
+        💘 Ahora somos oficialmente novios 💘
+        <div class="ring">💍</div>
     </div>
 </div>
 
 <script>
-const yesBtn = document.getElementById("yes");
-const noBtn = document.getElementById("no");
-const message = document.getElementById("message");
+const yesBtn=document.getElementById("yes");
+const noBtn=document.getElementById("no");
+const message=document.getElementById("message");
+const ring=document.querySelector(".ring");
+const music=document.getElementById("music");
 
-// Botón que se mueve cuando intentan presionar NO
-noBtn.addEventListener("mouseover", () => {
-    const x = Math.random() * (window.innerWidth - 100);
-    const y = Math.random() * (window.innerHeight - 50);
-    noBtn.style.left = x + "px";
-    noBtn.style.top = y + "px";
-});
-
-// Acción cuando presiona SI
-yesBtn.addEventListener("click", () => {
-    message.style.display = "block";
-});
-
-// Corazones flotando
-function createHeart(){
-    const heart = document.createElement("div");
-    heart.classList.add("heart");
-    heart.innerHTML = "💖";
-    heart.style.left = Math.random() * 100 + "vw";
-    heart.style.fontSize = Math.random() * 30 + 20 + "px";
-    heart.style.animationDuration = Math.random() * 3 + 2 + "s";
-    document.body.appendChild(heart);
-
-    setTimeout(() => {
-        heart.remove();
-    }, 5000);
+// Fade in música
+function fadeInAudio(audio){
+    audio.volume=0;
+    audio.play();
+    let fade=setInterval(()=>{
+        if(audio.volume<1){
+            audio.volume+=0.05;
+        } else clearInterval(fade);
+    },200);
 }
 
-setInterval(createHeart, 300);
+function openQuestion(){
+    document.getElementById("question").style.display="block";
+    fadeInAudio(music);
+}
+
+// Botón NO escapa
+noBtn.addEventListener("mouseover",()=>{
+    const x=Math.random()*(window.innerWidth-100);
+    const y=Math.random()*(window.innerHeight-50);
+    noBtn.style.left=x+"px";
+    noBtn.style.top=y+"px";
+});
+
+// Cuando dice SÍ
+yesBtn.addEventListener("click",()=>{
+    message.style.display="block";
+    ring.style.display="block";
+    startFireworks();
+    createHeartsExplosion();
+});
+
+// Fuegos artificiales
+const canvas=document.getElementById("fireworks");
+const ctx=canvas.getContext("2d");
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+
+function startFireworks(){
+    setInterval(()=>{
+        const x=Math.random()*canvas.width;
+        const y=Math.random()*canvas.height/2;
+        for(let i=0;i<60;i++){
+            ctx.fillStyle=`hsl(${Math.random()*360},100%,50%)`;
+            ctx.beginPath();
+            ctx.arc(x+Math.random()*150-75,y+Math.random()*150-75,3,0,Math.PI*2);
+            ctx.fill();
+        }
+    },500);
+}
+
+// Corazones flotando constantes
+function createHeart(){
+    const heart=document.createElement("div");
+    heart.classList.add("heart");
+    heart.innerHTML="💖";
+    heart.style.left=Math.random()*100+"vw";
+    heart.style.fontSize=Math.random()*20+15+"px";
+    document.body.appendChild(heart);
+    setTimeout(()=>heart.remove(),6000);
+}
+setInterval(createHeart,400);
+
+// Explosión de corazones
+function createHeartsExplosion(){
+    for(let i=0;i<30;i++){
+        createHeart();
+    }
+}
 </script>
 
 </body>
